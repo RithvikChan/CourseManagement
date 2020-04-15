@@ -9,7 +9,6 @@ class SearchResult extends Component {
 		super(props)
 		this.state = {
 			recom: 0,
-			filterText: '',
 			course_list: [],
 			nb_of_pages: null,
 			start_index: 0,
@@ -109,41 +108,6 @@ class SearchResult extends Component {
 		
 	}
 
-	// use fetch method to get courses' result from database according to filtertext
-/*
-	getCourseResult(filterText) {
-		if(filterText.length !== 0){
-			console.log(filterText)
-			fetch('/api/search/' + filterText)
-			.then(res => {
-				let result = res.json()
-				//console.log(result)
-				return result
-			})
-			.then(json => {
-				this.setState({
-					course_list: json,
-					recommendation: false,
-					nb_of_pages: Math.ceil(json.length / 8)
-				})
-				this.makePagination();
-			})
-		} else {
-			this.setState({
-				course_list: this.state.recomList,
-				recommendation: true,
-				nb_of_pages: Math.ceil(this.state.recomList / 8)
-			})
-		}
-	}
-	// get filterText from child component <SearchBar/>
-	handleUserInput(filterText) {
-		this.setState({
-			filterText: filterText
-		});
-		this.getCourseResult(filterText)
-	}
-*/
 
 	// get specific course card from child component from <CourseCard/> based on current_page
 	renderCourseCard(start_index, end_index, recom) {
@@ -193,29 +157,30 @@ class SearchResult extends Component {
 		})
 	}
 
-
-
 	getRandom(min, max) {
 		return (Math.random() * (max-min) + min).toPrecision(3);
 	}
 
-	// handle header text
-	handleHeader() {
-		if (this.state.recommendation === true) {
-			return (
-				<div className="section-header">
-					<h2 className="notice">Below are your course recommendations:</h2>
-				</div>
-			)
-		} else {
-			return (
-				<div className="section-header">
-					<h2 className="notice">Below are your search results:</h2>
-				</div>
-			)
-		}
+	handleUserInput(filterText) {
+		let resultList = [];
+		const userID = localStorage['session-username'].slice(1,-1);
+		fetch(`http://localhost:5000/course/info/search/${userID}/${filterText}`)
+		.then(res => res.json())
+		.then(recomList => {
+			for (let i = 0; i < recomList.length; i ++){
+				//console.log(recomList[i]);
+					resultList.push(recomList[i]);
+				}
+			this.setState({
+				course_list: resultList,
+				recomList: resultList,
+				nb_of_pages : Math.ceil(resultList.length / 8)
+			})
+		})
+		.catch((err) => {
+			console.log(`Opz, something wrong, the error message is ${err}`);
+		});
 	}
-
   render() {
 	//   If there is nothing in the search bar, We will recommend the course for you and this is the loading part
 		if((this.state.course_list.length === 0  && this.state.recom==0) &&  (this.state.recomList.length === 0  && this.state.recom==1 ) ){
@@ -234,10 +199,13 @@ class SearchResult extends Component {
 			onUserInput={this.handleUserInput.bind(this)} 
 			/>
         {this.handleHeader()}
-			*/}	
-				<button onClick={this.changerecom0.bind(this)}>All courses</button>
-				<button onClick={this.changerecom1.bind(this)}>Reccomended</button>
-
+			*/}	<center>
+				<button onClick={this.changerecom0.bind(this)}>Reccomended</button>
+				<button onClick={this.changerecom1.bind(this)}>All Courses</button>
+					</center>
+			<SearchBar 
+				onUserInput={this.handleUserInput.bind(this)} 
+			/>
 			<div className="search_result">
 			<form className="enroll">
 				{this.renderCourseCard(this.state.start_index, this.state.end_index)}

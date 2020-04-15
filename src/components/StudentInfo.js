@@ -7,6 +7,7 @@ class StudentInfo extends Component {
         super(props);
         this.state = {
             name: "",
+			downloaded: 0
         }
     }
 
@@ -25,7 +26,6 @@ class StudentInfo extends Component {
                   <div className="section-header">
                     <h2>Student Information</h2>
                   </div>
-                  <img src={require(`../images/5198410.jpg`)} alt="" className="Student_img"/>
                   <div className="student_info"> 
                     <div className="feature">
                       <i className="feature-icon fa fa-flask"></i>

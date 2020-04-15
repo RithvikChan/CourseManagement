@@ -14,6 +14,8 @@ class ReviewFormDynamic  extends  Component{
 
 	marksAdd(){
 	let username = JSON.parse(localStorage.getItem('session-username'));
+	alert(this.props.CourseCode)
+	alert(this.refs.marks.value)
 	const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
